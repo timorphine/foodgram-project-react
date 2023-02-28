@@ -21,7 +21,7 @@ class Ingredient(models.Model):
         ordering = ['name']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-    
+
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
 
@@ -46,7 +46,7 @@ class Tag(models.Model):
             '<span style="color: #{};">{}</span>',
             self.hexcolor,
         )
-    
+
     def __str__(self):
         return self.name
 
@@ -93,15 +93,15 @@ class Recipe(models.Model):
         'Дата публикации',
         auto_now_add=True
     )
-    
+
     class Meta:
         ordering = ['-pub_date']
         verbose_name = 'Рецепт',
         verbose_name_plural = 'Рецепты'
-    
+
     def __str__(self):
         return self.name
-    
+
 
 class IngredientAmount(models.Model):
     """Модель количества ингредиента."""
@@ -141,6 +141,7 @@ class Favorite(models.Model):
         related_name='user_favorite',
         verbose_name='Пользователь'
     )
+
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
@@ -161,6 +162,7 @@ class ShoppingCart(models.Model):
         related_name='cart',
         verbose_name='Рецепт'
     )
+
     class Meta:
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзины'

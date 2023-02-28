@@ -1,10 +1,9 @@
-from rest_framework import serializers
-from recipes.models import (
-    Recipe, Ingredient, Tag, IngredientAmount, Favorite, ShoppingCart
-)
-from users.models import User
-from users.serializers import CustomUserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
+from users.serializers import CustomUserSerializer
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -63,6 +62,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
             'amount'
         )
 
+
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для чтения рецепта."""
 
@@ -73,16 +73,16 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = '__all__'
-    
+
     def get_ingredients(self, obj):
         queryset = IngredientAmount.objects.filter(recipe=obj)
         return IngredientAmountSerializer(queryset, many=True).data
-    
+
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         return Favorite.objects.filter(user=request.user, recipe=obj).exists()
 
-    def get_is_in_cart(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         return ShoppingCart.objects.filter(
             user=request.user, recipe=obj
@@ -101,7 +101,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        lookup_field = 'name'
         fields = (
             'id',
             'author',
@@ -109,9 +108,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'image',
             'text',
+            'name',
             'cooking_time',
         )
-    
+
     @staticmethod
     def create_tags(tags, recipe):
         for tag in tags:
@@ -145,7 +145,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeReadSerializer(instance, context=context).data
-    
+
 
 class FavoriteSerializer(serializers.ModelSerializer):
     """Преобразования данных списка избранного."""
@@ -156,7 +156,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
             'user',
             'recipe'
         )
-    
+
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
@@ -170,11 +170,11 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingCart
-        fields = {
+        fields = (
             'recipe',
             'user'
-        }
-    
+        )
+
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}

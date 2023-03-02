@@ -13,9 +13,9 @@ router.register('users', CustomUserViewSet, basename='users')
 # )
 
 urlpatterns = [
-    path('', include(router.urls)),
     path('users/<user_id>/subscribe/', FollowViewSet.as_view(),
          name='subscribe'),
     path('users/subscriptions/', FollowReadView.as_view(),
          name='subscriptions'),
+    path('', include(router.urls)),
 ]

@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -43,7 +44,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def post_for_actions(request, pk, serializers):
         data = {'user': request.user.id, 'recipe': pk}
         serializer = serializers(data=data, context={'request': request})
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -91,17 +92,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = IngredientAmount.objects.filter(
             recipe__cart__user=request.user
         ).values_list(
-            'ingredient__name', 'ingredient__measurement_unit', 'amount'
-        )
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
         for value in ingredients:
             name = value[0]
-            if name not in shop_list:
-                shop_list[name] = {
-                    'measurement_unit': value[1],
-                    'amount': value[2]
-                }
-            else:
-                shop_list[name]['amount'] += value[2]
+            shop_list[name] = {
+                'measurement_unit': value[1],
+                'amount': value[2]
+            }
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = (
             'attachment; ', 'filename="shopping_list.pdf"'

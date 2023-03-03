@@ -111,7 +111,6 @@ class FollowSerializer(serializers.ModelSerializer):
             'author',
             'user'
         )
-        unique_together = ['author', 'user']
 
     def to_representation(self, instance):
         return FollowReadSerializer(

@@ -62,7 +62,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class FollowSerializer(CustomUserSerializer):
+class FollowReadSerializer(CustomUserSerializer):
     """Сериализатор обработки подписок пользователей."""
 
     recipes = serializers.SerializerMethodField(read_only=True)
@@ -96,3 +96,25 @@ class FollowSerializer(CustomUserSerializer):
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
         return UserRecipeSerializer(recipes, many=True).data
+    
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        return Follow.objects.filter(
+            user=request.user, author=obj
+        ).exists()
+
+
+class FollowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Follow
+        fields = (
+            'author',
+            'user'
+        )
+        unique_together = ['author', 'user']
+    
+    def to_representation(self, instance):
+        return FollowReadSerializer(instance, 
+                                    context={'request': self.context.get('request')}
+        ).data

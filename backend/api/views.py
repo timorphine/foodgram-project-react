@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
-from users.serializers import CustomUserSerializer, FollowSerializer
+from users.serializers import CustomUserSerializer, FollowSerializer, FollowReadSerializer
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
@@ -39,6 +39,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             return RecipeReadSerializer
         return RecipeSerializer
+    
 
     @staticmethod
     def post_for_actions(request, pk, serializers):
@@ -161,7 +162,7 @@ class FollowViewSet(APIView):
 
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated, ]
-    pagination_class = CustomPagination
+
 
     def post(self, request, *args, **kwargs):
         user_id = self.kwargs.get('user_id')

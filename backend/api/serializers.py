@@ -11,11 +11,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = (
-            'name',
-            'measurement_unit',
-            'amount',
-        )
+        fields = '__all__'
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -24,6 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = (
+            'id',
             'name',
             'slug',
             'hex_color',
@@ -68,7 +65,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = serializers.SerializerMethodField(read_only=True)
+    ingredients = serializers.SerializerMethodField()
+    image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
@@ -114,6 +112,40 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
+    def validate(self, data):
+        ingredients = data['ingredients']
+        ingredients_list = []
+        for ingredient in ingredients:
+            ingredient_id = ingredient['id']
+            if ingredient_id in ingredients_list:
+                raise serializers.ValidationError({
+                    'ingredients': 'Вы уже добавили этот ингредиент'
+                })
+            ingredients_list.append(ingredient_id)
+            amount = ingredient['amount']
+            if int(amount) <= 0:
+                raise serializers.ValidationError({
+                    'amount': 'Добавьте больше ингредиента!'
+                })
+        tags = data['tags']
+        if not tags:
+            raise serializers.ValidationError({
+                'tags': 'Пожалуйста, выберите тег'
+            })
+        tags_list = []
+        for tag in tags:
+            if tag in tags_list:
+                raise serializers.ValidationError({
+                    'tags': 'Такой тег уже существует'
+                })
+            tags_list.append(tag)
+        cooking_time = data['cooking_time']
+        if int(cooking_time) <= 0:
+            raise serializers.ValidationError({
+                'cooking_time': 'Установите время приготовления'
+            })
+        return data
+
     @staticmethod
     def create_tags(tags, recipe):
         for tag in tags:
@@ -122,7 +154,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     @staticmethod
     def create_ingredients(ingredients, recipe):
         for ingredient in ingredients:
-            IngredientAmount.objects.get_or_create(
+            IngredientAmount.objects.create(
                 recipe=recipe, ingredient=ingredient['id'],
                 amount=ingredient['amount']
             )

@@ -6,16 +6,11 @@ from api.views import CustomUserViewSet, FollowReadView, FollowViewSet
 router = DefaultRouter()
 
 router.register('users', CustomUserViewSet, basename='users')
-# router.register(
-#     r'users/subscriptions',
-#     FollowReadView,
-#     basename='subscriptions'
-# )
 
 urlpatterns = [
-    path('users/<user_id>/subscribe/', FollowViewSet.as_view(),
-         name='subscribe'),
     path('users/subscriptions/', FollowReadView.as_view(),
          name='subscriptions'),
+    path('users/<user_id>/subscribe/', FollowViewSet.as_view(),
+         name='subscribe'),
     path('', include(router.urls)),
 ]

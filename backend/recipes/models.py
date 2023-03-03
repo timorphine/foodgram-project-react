@@ -41,12 +41,6 @@ class Tag(models.Model):
         default='#ffffff'
     )
 
-    def colored_name(self):
-        return format_html(
-            '<span style="color: #{};">{}</span>',
-            self.hexcolor,
-        )
-
     def __str__(self):
         return self.name
 
@@ -77,8 +71,8 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        verbose_name='Ингредиент',
         through='IngredientAmount',
+        verbose_name='Ингредиент',
         related_name='recipes'
     )
     tags = models.ManyToManyField(
@@ -124,6 +118,7 @@ class IngredientAmount(models.Model):
 
     class Meta:
         verbose_name = 'Количество ингредиента'
+        verbose_name_plural = 'Количество ингредиентов'
         unique_together = ['ingredient', 'recipe']
 
 

@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -12,11 +14,8 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
-                            ShoppingCart, Tag)
 from users.models import Follow, User
-from users.serializers import CustomUserSerializer, FollowSerializer, FollowReadSerializer
+from users.serializers import CustomUserSerializer, FollowSerializer
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
@@ -39,7 +38,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             return RecipeReadSerializer
         return RecipeSerializer
-    
 
     @staticmethod
     def post_for_actions(request, pk, serializers):
@@ -162,7 +160,6 @@ class FollowViewSet(APIView):
 
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated, ]
-
 
     def post(self, request, *args, **kwargs):
         user_id = self.kwargs.get('user_id')

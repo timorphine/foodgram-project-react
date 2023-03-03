@@ -1,8 +1,7 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from recipes.models import Recipe
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
-from recipes.models import Recipe
 
 from .models import Follow, User
 
@@ -96,7 +95,7 @@ class FollowReadSerializer(CustomUserSerializer):
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
         return UserRecipeSerializer(recipes, many=True).data
-    
+
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         return Follow.objects.filter(
@@ -113,8 +112,8 @@ class FollowSerializer(serializers.ModelSerializer):
             'user'
         )
         unique_together = ['author', 'user']
-    
+
     def to_representation(self, instance):
-        return FollowReadSerializer(instance, 
-                                    context={'request': self.context.get('request')}
+        return FollowReadSerializer(
+            instance, context={'request': self.context.get('request')}
         ).data

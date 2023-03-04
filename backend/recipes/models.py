@@ -35,7 +35,7 @@ class Tag(models.Model):
     slug = models.SlugField(
         unique=True
     )
-    hex_color = models.CharField(
+    color = models.CharField(
         max_length=7,
         default='#ffffff'
     )

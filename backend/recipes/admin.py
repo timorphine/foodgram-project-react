@@ -20,12 +20,12 @@ class TagAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'name',
-        'hex_color',
+        'color',
         'slug'
     )
     list_editable = (
         'name',
-        'hex_color',
+        'color',
         'slug'
     )
 

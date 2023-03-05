@@ -11,7 +11,7 @@ def ingridients_load(row):
     Tag.objects.get_or_create(
         name=row[0],
         slug=row[1],
-        hex_color=row[2]
+        color=row[2]
     )
 
 

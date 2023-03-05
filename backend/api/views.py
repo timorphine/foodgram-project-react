@@ -18,7 +18,6 @@ from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
 from users.serializers import CustomUserSerializer, FollowSerializer
-
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import UserIsAuthorOrReadOnly
@@ -94,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe__cart__user=request.user
         ).values_list(
             'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
+        ).annotate(quantity=Sum('amount'))
         for value in ingredients:
             name = value[0]
             shop_list[name] = {

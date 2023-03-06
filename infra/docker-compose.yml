@@ -10,7 +10,7 @@ services:
       - ./.env
 
   backend:
-    build: ../backend/
+    image: timorphine/foodgram-backend
     expose:
       - 8000
     restart: always
@@ -23,9 +23,7 @@ services:
       - db
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: timorphine/foodgram-frontend
     volumes:
       - ../frontend/:/app/result_build/
 

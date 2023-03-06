@@ -30,10 +30,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецепта."""
 
     queryset = Recipe.objects.all()
-    permission_classes = [UserIsAuthorOrReadOnly, ]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
+    permission_classes = [UserIsAuthorOrReadOnly, ]
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -102,7 +102,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             }
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = (
-            'attachment; ', 'filename="shopping_list.pdf"'
+            'attachment; filename="shopping_list.pdf"'
         )
         pdfmetrics.registerFont(
             TTFont('BebasNeue_Book', 'data/BebasNeue_Book.ttf', 'UTF-8')

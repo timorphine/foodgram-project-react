@@ -1,5 +1,4 @@
-158.160.23.184
-
+# praktikum_new_diplom
 
 ---ADMIN---
 email: tkondakov98@yandex.ru
